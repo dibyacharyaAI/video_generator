@@ -21,7 +21,7 @@ except Exception:
 
 # --- Basic Streamlit page layout ---
 st.set_page_config(page_title="Medical Video Generator", layout="wide")
-st.title(" AI-based Medical Video Generator ")
+st.title("🧠⚕️ AI-based Medical Video Generator (Demo)")
 
 st.markdown(
     """
@@ -38,7 +38,7 @@ This demo shows how a **single prompt** becomes a medical training video:
 
 # If imports failed, show error instead of blank screen
 if not PIPELINE_OK:
-    st.error(" Backend pipeline import failed. Check the traceback below.")
+    st.error("❌ Backend pipeline import failed. Check the traceback below.")
     st.code(ERROR_TEXT, language="python")
     st.stop()
 
