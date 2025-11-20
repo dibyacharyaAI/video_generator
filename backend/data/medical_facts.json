@@ -1,0 +1,14 @@
+[
+  {
+    "topic": "cholecystectomy",
+    "fact": "A laparoscopic cholecystectomy involves removal of the gallbladder through small incisions."
+  },
+  {
+    "topic": "heart surgery",
+    "fact": "Coronary artery bypass grafting is a surgery to improve blood flow to the heart."
+  },
+  {
+    "topic": "appendectomy",
+    "fact": "An appendectomy is the surgical removal of the appendix."
+  }
+]

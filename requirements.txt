@@ -1,0 +1,6 @@
+streamlit
+flask
+pydantic
+requests
+numpy
+opencv-python-headless

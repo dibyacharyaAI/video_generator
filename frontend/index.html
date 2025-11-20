@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Medical Video Generator - Test UI</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        textarea { width: 100%%; }
+        pre { background: #f0f0f0; padding: 10px; white-space: pre-wrap; }
+        .videos { margin-top: 20px; }
+        video { max-width: 480px; display: block; margin-bottom: 16px; }
+    </style>
+</head>
+<body>
+    <h1>Medical Video Generator</h1>
+    <p>Enter a prompt to generate a storyboard, narration and video clips.</p>
+    <form id="generateForm">
+        <textarea id="promptInput" rows="4" placeholder="Describe the surgical procedure..."></textarea><br>
+        <button type="submit">Generate Video Plan &amp; Clips</button>
+    </form>
+
+    <h2>Result (Raw JSON)</h2>
+    <pre id="resultOutput"></pre>
+
+    <h2>Generated Clips (Preview)</h2>
+    <div id="videoContainer" class="videos"></div>
+
+    <script>
+        document.getElementById('generateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const prompt = document.getElementById('promptInput').value;
+            const resultOutput = document.getElementById('resultOutput');
+            const videoContainer = document.getElementById('videoContainer');
+            resultOutput.textContent = "Loading...";
+            videoContainer.innerHTML = "";
+
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+                const data = await response.json();
+                resultOutput.textContent = JSON.stringify(data, null, 2);
+
+                if (Array.isArray(data.clips)) {
+                    data.clips.forEach(function(clip) {
+                        const wrapper = document.createElement('div');
+                        const title = document.createElement('div');
+                        title.textContent = clip.scene_title + " (" + clip.video_url + ")";
+                        const videoEl = document.createElement('video');
+                        videoEl.setAttribute('controls', 'controls');
+                        videoEl.src = clip.video_url;
+                        wrapper.appendChild(title);
+                        wrapper.appendChild(videoEl);
+                        videoContainer.appendChild(wrapper);
+                    });
+                }
+            } catch (err) {
+                resultOutput.textContent = "Error: " + err;
+            }
+        });
+    </script>
+</body>
+</html>
