@@ -4,46 +4,45 @@ from pathlib import Path
 
 import streamlit as st
 
-# --- Try to import backend pipeline safely ---
+# --- Safely try importing backend pipeline ---
 PIPELINE_OK = True
 ERROR_TEXT = ""
 
 try:
-    # Assuming we are in project root and "backend" is a package
     from backend.agents.prompt_agent import PromptRefinementAgent
     from backend.services.rag_service import RAGService
     from backend.agents.director_agent import DirectorAgent
     from backend.agents.script_agent import ScriptAgent
     from backend.agents.video_agent import VideoAgent
     from backend.agents.review_agent import ReviewAgent
-except Exception as e:
+except Exception:
     PIPELINE_OK = False
     ERROR_TEXT = traceback.format_exc()
 
-# --- Streamlit page config ---
+# --- Basic Streamlit page layout ---
 st.set_page_config(page_title="Medical Video Generator", layout="wide")
-st.title("🧠⚕️ AI-based Medical Video Generator (Demo)")
+st.title(" AI-based Medical Video Generator ")
 
 st.markdown(
     """
-    This demo shows how a **single prompt** becomes a medical training video:
-    
-    1. Prompt is refined (surgeon-perspective, tutorial framing)  
-    2. Medical context is retrieved (RAG stub)  
-    3. A scene-by-scene storyboard is planned  
-    4. Narration/script is generated  
-    5. **Stable Diffusion XL** generates images for each scene  
-    6. Images are converted to animated **MP4 clips** with OpenCV  
-    """
+This demo shows how a **single prompt** becomes a medical training video:
+
+1. Prompt is refined (surgeon-perspective, tutorial framing)  
+2. Medical context is retrieved (RAG stub)  
+3. A scene-by-scene storyboard is planned  
+4. Narration/script is generated  
+5. **Stable Diffusion XL** generates images for each scene  
+6. Images are converted to animated **MP4 clips** with OpenCV  
+"""
 )
 
-# If imports failed, show the error clearly on the page
+# If imports failed, show error instead of blank screen
 if not PIPELINE_OK:
-    st.error("❌ Backend pipeline import failed.")
+    st.error(" Backend pipeline import failed. Check the traceback below.")
     st.code(ERROR_TEXT, language="python")
     st.stop()
 
-# --- If imports OK, initialise agents ---
+# --- Initialise agents if imports succeed ---
 prompt_agent = PromptRefinementAgent()
 rag_service = RAGService()
 director_agent = DirectorAgent(rag_service)
@@ -51,7 +50,7 @@ script_agent = ScriptAgent()
 video_agent = VideoAgent()
 review_agent = ReviewAgent()
 
-# Directory where VideoAgent is writing videos
+# Directory where VideoAgent writes videos
 VIDEO_DIR = Path(__file__).parent / "backend" / "generated_videos"
 VIDEO_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -78,7 +77,7 @@ if generate_btn and prompt.strip():
             # 4. Script / narration
             scenes = script_agent.generate_scripts(scenes)
 
-            # Transcript
+            # Transcript (all narrations combined)
             transcript = " ".join(scene.narration or "" for scene in scenes)
 
             # 5. Video clips
@@ -87,8 +86,8 @@ if generate_btn and prompt.strip():
             # 6. Review
             review = review_agent.review(scenes)
 
-        except Exception as e:
-            st.error("❌ Error while running the pipeline.")
+        except Exception:
+            st.error("❌ Error while running the generation pipeline.")
             st.code(traceback.format_exc(), language="python")
             st.stop()
 
@@ -129,6 +128,7 @@ if generate_btn and prompt.strip():
         else:
             for clip in clips:
                 st.markdown(f"**{clip.scene_title}**")
+                # clip.video_url is like "/videos/scene_1_xxx.mp4" → we just use the filename
                 video_path = VIDEO_DIR / Path(clip.video_url).name
                 if video_path.exists():
                     st.video(str(video_path))
