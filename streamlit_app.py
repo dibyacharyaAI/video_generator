@@ -1,18 +1,8 @@
 import os
-import uuid
-import random
-from typing import Optional, List
+import traceback
+from pathlib import Path
 
-import cv2
-import numpy as np
-import requests
-
-# Streamlit optional import (Cloud ke liye)
-try:
-    import streamlit as st
-except ImportError:
-    st = None
-
+import streamlit as st
 
 # --- Safely try importing backend pipeline ---
 PIPELINE_OK = True
@@ -147,4 +137,3 @@ if generate_btn and prompt.strip():
 else:
     with col_right:
         st.info("Enter a procedure description and click **Generate** to see the pipeline in action.")
-
