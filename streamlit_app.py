@@ -21,7 +21,7 @@ except Exception:
 
 # --- Basic Streamlit page layout ---
 st.set_page_config(page_title="Medical Video Generator", layout="wide")
-st.title("🧠⚕️ AI-based Medical Video Generator (Demo)")
+st.title("AI-based Medical Video Generator")
 
 st.markdown(
     """
@@ -137,3 +137,4 @@ if generate_btn and prompt.strip():
 else:
     with col_right:
         st.info("Enter a procedure description and click **Generate** to see the pipeline in action.")
+
